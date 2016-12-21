@@ -145,6 +145,15 @@ EOS
     launch_another_thread thread, 1, &b
   end
 
+  def launch_next_new_thread_after thread, &b
+    n = next_new_thread
+    if n
+      launch_another_thread thread, (n - curpos), &b
+    elsif b
+      b.call
+    end
+  end
+
   def launch_prev_thread_before thread, &b
     launch_another_thread thread, -1, &b
   end
@@ -445,17 +454,23 @@ EOS
     update
   end
 
-  def jump_to_next_new
+  def next_new_thread
     n = @mutex.synchronize do
       ((curpos + 1) ... lines).find { |i| @threads[i].has_label? :unread } ||
-        (0 ... curpos).find { |i| @threads[i].has_label? :unread }
-    end
+          (0 ... curpos).find { |i| @threads[i].has_label? :unread }
+	end
+
+	BufferManager.flash "No new messages." unless n
+
+	return n
+  end
+
+  def jump_to_next_new
+    n = next_new_thread
     if n
       ## jump there if necessary
       jump_to_line n unless n >= topline && n < botline
       set_cursor_pos n
-    else
-      BufferManager.flash "No new messages."
     end
   end
 

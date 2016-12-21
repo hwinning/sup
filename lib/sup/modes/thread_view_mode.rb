@@ -85,6 +85,7 @@ EOS
     k.add :archive_and_next, "Archive this thread, kill buffer, and view next", 'a'
     k.add :delete_and_next, "Delete this thread, kill buffer, and view next", 'd'
     k.add :kill_and_next, "Kill this thread, kill buffer, and view next", '&'
+	k.add :do_nothing_and_next_new, "Kill buffer, and view next unread thread", :tab
     k.add :toggle_wrap, "Toggle wrapping of text", 'w'
 
     k.add :goto_uri, "Goto uri under cursor", 'g'
@@ -623,6 +624,7 @@ EOS
   def kill_and_next; kill_and_then :next end
   def unread_and_next; unread_and_then :next end
   def do_nothing_and_next; do_nothing_and_then :next end
+  def do_nothing_and_next_new; do_nothing_and_then :next_new end
 
   def archive_and_prev; archive_and_then :prev end
   def spam_and_prev; spam_and_then :prev end
@@ -707,6 +709,8 @@ EOS
     case op
     when :next
       @index_mode.launch_next_thread_after @thread, &l
+	when :next_new
+	  @index_mode.launch_next_new_thread_after @thread, &l
     when :prev
       @index_mode.launch_prev_thread_before @thread, &l
     when :kill

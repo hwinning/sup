@@ -37,9 +37,10 @@ class ContactManager
     end
     ## Update with new data
     @p2a[person] = aalias
+	@e2p[person.email] = person
     unless aalias.nil? || aalias.empty?
       @a2p[aalias] = person
-      @e2p[person.email] = person
+      #@e2p[person.email] = person	# e2p is only initialized if the person has an alias?
     end
   end
 

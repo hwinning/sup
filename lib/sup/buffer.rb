@@ -441,8 +441,14 @@ EOS
 
       prefix = prefix.join(", ") + (prefix.empty? ? "" : ", ")
       prefix.fix_encoding!
-
-      completions.select { |x| x =~ /^#{Regexp::escape target}/iu }.sort_by { |c| [ContactManager.contact_for(c) ? 0 : 1, c] }.map { |x| [prefix + x, x] }
+	 
+      matches = completions.select { |x| x =~ /^#{Regexp::escape target}/iu }
+	  if matches.map { |c| ContactManager.person_for(c) ? ContactManager.person_for(c).full_address : c }.uniq.size == 1 || matches.map(&:downcase).uniq.size == 1
+		  x = ContactManager.person_for(matches.first) ? ContactManager.person_for(matches.first).full_address : matches.first
+		  [prefix + x]
+	  else
+	      matches.sort_by { |c| [ContactManager.contact_for(c) ? 0 : 1, c] }.map { |x| [prefix + x, x] }
+	  end
     end
   end
 

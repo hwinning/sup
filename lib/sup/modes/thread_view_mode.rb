@@ -394,7 +394,8 @@ EOS
     when Chunk::Attachment
       default_dir = $config[:default_attachment_save_dir]
       default_dir = ENV["HOME"] if default_dir.nil? || default_dir.empty?
-      default_fn = File.expand_path File.join(default_dir, chunk.safe_filename)
+      #default_fn = File.expand_path File.join(default_dir, chunk.safe_filename)
+      default_fn = File.expand_path File.join(default_dir, chunk.filename)
       fn = BufferManager.ask_for_filename :filename, "Save attachment to file or directory: ", default_fn, true
 
       # if user selects directory use file name from message

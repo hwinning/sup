@@ -528,11 +528,11 @@ EOS
     end
   end
 
-  def ask_for_account domain, question
+  def ask_for_account domain, question, default=nil
     completions = AccountManager.user_emails
-    answer = BufferManager.ask_many_emails_with_completions domain, question, completions, ""
+    answer = BufferManager.ask_many_emails_with_completions domain, question, completions, default
     answer = AccountManager.default_account.email if answer == ""
-    AccountManager.account_for Person.from_address(answer).email if answer
+    AccountManager.account_for(Person.from_address(answer).email) if answer
   end
 
   ## for simplicitly, we always place the question at the very bottom of the

@@ -10,8 +10,12 @@ module CanAliasContacts
     return if name.nil? || name.empty? # don't allow empty names
     p.name = name
 
-    ContactManager.update_alias p, aalias
-    BufferManager.flash "Contact updated!"
+    default_from = BufferManager.ask_for_account(:account, "Default from account for #{p.longname}: ", p.default_from)
+    return if default_from.nil?
+    p.default_from = default_from.email
+
+    ContactManager.update_alias(p, aalias)
+    BufferManager.flash("Contact updated!")
   end
 end
 
@@ -130,16 +134,18 @@ protected
 
   def text_for_contact p
     aalias = ContactManager.alias_for(p) || ""
+    default_from = p.default_from.nil? || p.default_from.empty? ? '' : "(#{p.default_from})"
     [[:tagged_color, @tags.tagged?(p) ? ">" : " "],
-     [:text_color, sprintf("%-#{@awidth}s %-#{@nwidth}s %s", aalias, p.name, p.email)]]
+     [:text_color, sprintf("%-#{@awidth}s %-#{@nwidth}s %-#{@ewidth}s %s", aalias, p.name, p.email, default_from)]]
   end
 
   def regen_text
-    @awidth, @nwidth = 0, 0
+    @awidth, @nwidth, @ewidth = 0, 0, 0
     @contacts.each do |p|
       aalias = ContactManager.alias_for(p)
       @awidth = aalias.length if aalias && aalias.length > @awidth
       @nwidth = p.name.length if p.name && p.name.length > @nwidth
+      @ewidth = p.email.length if p.email && p.email.length > @ewidth
     end
 
     @text = @contacts.map { |p| text_for_contact p }

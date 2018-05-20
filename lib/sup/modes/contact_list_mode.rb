@@ -29,6 +29,7 @@ class ContactListMode < LineCursorMode
     k.add :toggle_tagged, "Tag/untag current line", 't'
     k.add :apply_to_tagged, "Apply next command to all tagged items", '+'
     k.add :search, "Search for messages from particular people", 'S'
+    k.add :delete_contact, "Delete contact on current line", 'd'
   end
 
   def initialize mode=:regular
@@ -40,6 +41,13 @@ class ContactListMode < LineCursorMode
   end
 
   include CanAliasContacts
+
+  def delete_contact
+    p = @contacts[curpos] or return
+    ContactManager.drop_contact(p)
+    update
+  end
+
   def alias
     p = @contacts[curpos] or return
     alias_contact p
